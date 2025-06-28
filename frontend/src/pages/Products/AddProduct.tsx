@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { addProduct } from "../../redux/productSlice";
+import type { AppDispatch } from "../../redux/store";
+import toast from "react-hot-toast";
 
 type ProductType = "Halı" | "Kilim" | "Yorgan" | "Diğer";
 
@@ -23,13 +27,14 @@ const initialProduct: Product = {
 };
 
 const AddProductForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const [product, setProduct] = useState<Product>(initialProduct);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [area, setArea] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
-    // En ve boy varsa alanı hesapla (cm -> m² dönüştür)
     if (
       typeof product.width === "number" &&
       product.width > 0 &&
@@ -39,7 +44,6 @@ const AddProductForm = () => {
       const calculatedArea = (product.width / 100) * (product.height / 100);
       setArea(calculatedArea);
 
-      // Toplam fiyat = metrekare * metrekare fiyatı
       if (
         typeof product.pricePerSquareMeter === "number" &&
         product.pricePerSquareMeter > 0
@@ -61,10 +65,7 @@ const AddProductForm = () => {
       newErrors.width = "Geçerli bir genişlik girin";
     if (product.height === "" || product.height <= 0)
       newErrors.height = "Geçerli bir yükseklik girin";
-    if (
-      product.pricePerSquareMeter === "" ||
-      product.pricePerSquareMeter <= 0
-    )
+    if (product.pricePerSquareMeter === "" || product.pricePerSquareMeter <= 0)
       newErrors.pricePerSquareMeter = "Metrekare fiyatı gerekli";
     return newErrors;
   };
@@ -78,9 +79,7 @@ const AddProductForm = () => {
     setProduct((prev) => ({
       ...prev,
       [name]:
-        name === "width" ||
-        name === "height" ||
-        name === "pricePerSquareMeter"
+        name === "width" || name === "height" || name === "pricePerSquareMeter"
           ? value === ""
             ? ""
             : Number(value)
@@ -88,25 +87,23 @@ const AddProductForm = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
+
     setErrors({});
-    alert(
-      "Ürün kaydedildi:\n" +
-        JSON.stringify(
-          { ...product, area: area.toFixed(2), totalPrice: totalPrice.toFixed(2) },
-          null,
-          2
-        )
-    );
-    setProduct(initialProduct);
-    setArea(0);
-    setTotalPrice(0);
+    try {
+      await dispatch(addProduct(product));
+      toast.success("Ürün başarıyla eklendi!");
+      setProduct(initialProduct);
+    } catch (error) {
+      toast.error("Ürün eklenemedi");
+    }
   };
 
   return (
@@ -116,7 +113,10 @@ const AddProductForm = () => {
       </h2>
       <form onSubmit={handleSubmit} noValidate>
         {/* Ürün Adı */}
-        <label className="block mb-1 font-semibold text-gray-700" htmlFor="name">
+        <label
+          className="block mb-1 font-semibold text-gray-700"
+          htmlFor="name"
+        >
           Ürün Adı *
         </label>
         <input
@@ -132,7 +132,9 @@ const AddProductForm = () => {
           }`}
           placeholder="Ürün adını girin"
         />
-        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+        {errors.name && (
+          <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+        )}
 
         {/* Ürün Türü */}
         <label
@@ -231,7 +233,9 @@ const AddProductForm = () => {
           placeholder="Metrekare fiyatını girin"
         />
         {errors.pricePerSquareMeter && (
-          <p className="text-red-500 text-sm mt-1">{errors.pricePerSquareMeter}</p>
+          <p className="text-red-500 text-sm mt-1">
+            {errors.pricePerSquareMeter}
+          </p>
         )}
 
         {/* Alan ve Toplam Fiyat Gösterimi */}

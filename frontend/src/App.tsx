@@ -1,6 +1,8 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast"; // ✅ eklendi
+
 import Login from "./pages/Auth/Login";
 import Dashboard from "./pages/Dashboard";
 import { store } from "./redux/store";
@@ -13,6 +15,8 @@ export default function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
+        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
