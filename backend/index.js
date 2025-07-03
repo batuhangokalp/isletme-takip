@@ -10,7 +10,10 @@ app.use(cors());
 app.use(express.json());
 
 const productRoutes = require("./routes/productRoutes");
+const customerRoutes = require("./routes/customerRoutes");
+
 app.use("/api/products", productRoutes);
+app.use("/api/customers", customerRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
