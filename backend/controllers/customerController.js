@@ -9,7 +9,10 @@ exports.createCustomer = async (req, res) => {
   console.log("Creating customer with data:", req.body);
   const newCustomer = new Customer(req.body);
   await newCustomer.save();
-  res.status(201).json(newCustomer);
+  res.status(201).json({
+    message: "Müşteri başarıyla oluşturuldu.",
+    customer: newCustomer,
+  });
 };
 
 exports.updateCustomer = async (req, res) => {
