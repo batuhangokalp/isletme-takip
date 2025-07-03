@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addProduct } from "../../redux/productSlice";
 import type { AppDispatch } from "../../redux/store";
-import toast from "react-hot-toast";
+import { toast } from 'react-toastify';
 
 type ProductType = "Halı" | "Kilim" | "Yorgan" | "Diğer";
 

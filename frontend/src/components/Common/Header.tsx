@@ -64,6 +64,12 @@ const Header = () => {
           >
             Kayıtlar
           </Link>
+          <Link
+            to="/musteriler"
+            className="hover:text-gray-300 transition duration-200"
+          >
+            Müşteriler
+          </Link>
           <button
             onClick={handleLogout}
             className="hover:text-red-400 transition duration-200 font-semibold"
@@ -98,6 +104,7 @@ const Header = () => {
             { to: "/dashboard", label: "Ana Sayfa" },
             { to: "/urun-ekle", label: "Ürün Ekle" },
             { to: "/kayitlar", label: "Kayıtlar" },
+            { to: "/musteriler", label: "Müşteriler" },
           ].map(({ to, label }) => (
             <Link
               key={to}
